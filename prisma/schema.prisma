@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  name      String
+  address   String
+  notes     String?
+  createdAt DateTime @default(now())
+
+  placements      Placement[]
+  visits          Visit[]
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  name        String
+  date        DateTime
+  description String?
+  landingUrl  String
+  createdAt   DateTime @default(now())
+
+  promotions Promotion[]
+}
+
+model Design {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  promotions Promotion[]
+}
+
+model Promotion {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  eventId  String
+  event    Event  @relation(fields: [eventId], references: [id])
+  designId String
+  design   Design @relation(fields: [designId], references: [id])
+
+  printOrders PrintOrder[]
+  placements  Placement[]
+
+  @@unique([eventId, designId])
+}
+
+model PrintOrder {
+  id          String   @id @default(cuid())
+  quantity    Int
+  orderedAt   DateTime @default(now())
+  notes       String?
+
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+}
+
+model Placement {
+  id        String   @id @default(cuid())
+  qrCode    String?
+  createdAt DateTime @default(now())
+
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  locationId  String
+  location    Location  @relation(fields: [locationId], references: [id])
+
+  engagements     Engagement[]
+  dropoffAttempts DropoffAttempt[]
+
+  @@unique([promotionId, locationId])
+}
+
+model Engagement {
+  id         String   @id @default(cuid())
+  scannedAt  DateTime @default(now())
+
+  placementId String
+  placement   Placement @relation(fields: [placementId], references: [id])
+}
+
+model Visit {
+  id        String   @id @default(cuid())
+  visitedBy String
+  visitedAt DateTime @default(now())
+  notes     String?
+
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+
+  dropoffAttempts DropoffAttempt[]
+}
+
+model DropoffAttempt {
+  id       String              @id @default(cuid())
+  quantity Int?
+  status   DropoffStatus
+  comment  String?
+
+  visitId     String
+  visit       Visit     @relation(fields: [visitId], references: [id])
+  placementId String
+  placement   Placement @relation(fields: [placementId], references: [id])
+}
+
+enum DropoffStatus {
+  accepted
+  rejected
+  tentative
+}
