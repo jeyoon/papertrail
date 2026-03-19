@@ -7,7 +7,7 @@
 | Framework | Next.js (App Router, TypeScript) |
 | Database | Supabase (hosted Postgres) |
 | ORM | Prisma |
-| Styling | Tailwind CSS + shadcn/ui |
+| UI | Material UI (MUI v7) |
 | QR generation | `qrcode` npm package |
 | Deployment | Vercel |
 
@@ -19,9 +19,8 @@ GitHub repo
     ▼
 Vercel (auto-deploy on push)
     │  Next.js app
-    │  ├── /app              → UI pages (admin, protected)
-    │  ├── /app/api          → API routes (QR generation, etc.)
-    │  └── /app/t/[id]       → Public tracking endpoint
+    │  ├── /app/(admin)    → Admin UI (events, locations, designs, etc.)
+    │  └── /app/t/[id]     → Public tracking endpoint
     │
     ▼
 Supabase (hosted Postgres)
@@ -34,6 +33,7 @@ Supabase (hosted Postgres)
 - All other routes are behind Supabase Auth (email magic link)
 - Prisma migrations run on deploy via build hook — DB stays in sync automatically
 - No secrets in the repo — env vars managed in Vercel dashboard
+- Cascade deletes are handled manually in server actions via `prisma.$transaction` (leaf records deleted first)
 
 ## Environment Variables
 

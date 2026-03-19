@@ -4,9 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 model Location {
@@ -16,8 +14,8 @@ model Location {
   notes     String?
   createdAt DateTime @default(now())
 
-  placements      Placement[]
-  visits          Visit[]
+  drops  Drop[]
+  visits Visit[]
 }
 
 model Event {
@@ -28,7 +26,7 @@ model Event {
   landingUrl  String
   createdAt   DateTime @default(now())
 
-  promotions Promotion[]
+  flyers Flyer[]
 }
 
 model Design {
@@ -37,10 +35,10 @@ model Design {
   description String?
   createdAt   DateTime @default(now())
 
-  promotions Promotion[]
+  flyers Flyer[]
 }
 
-model Promotion {
+model Flyer {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
 
@@ -50,43 +48,43 @@ model Promotion {
   design   Design @relation(fields: [designId], references: [id])
 
   printOrders PrintOrder[]
-  placements  Placement[]
+  drops       Drop[]
 
   @@unique([eventId, designId])
 }
 
 model PrintOrder {
-  id          String   @id @default(cuid())
-  quantity    Int
-  orderedAt   DateTime @default(now())
-  notes       String?
+  id        String   @id @default(cuid())
+  quantity  Int
+  orderedAt DateTime @default(now())
+  notes     String?
 
-  promotionId String
-  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  flyerId String
+  flyer   Flyer  @relation(fields: [flyerId], references: [id])
 }
 
-model Placement {
+model Drop {
   id        String   @id @default(cuid())
   qrCode    String?
   createdAt DateTime @default(now())
 
-  promotionId String
-  promotion   Promotion @relation(fields: [promotionId], references: [id])
-  locationId  String
-  location    Location  @relation(fields: [locationId], references: [id])
+  flyerId    String
+  flyer      Flyer    @relation(fields: [flyerId], references: [id])
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
 
   engagements     Engagement[]
   dropoffAttempts DropoffAttempt[]
 
-  @@unique([promotionId, locationId])
+  @@unique([flyerId, locationId])
 }
 
 model Engagement {
-  id         String   @id @default(cuid())
-  scannedAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  scannedAt DateTime @default(now())
 
-  placementId String
-  placement   Placement @relation(fields: [placementId], references: [id])
+  dropId String
+  drop   Drop   @relation(fields: [dropId], references: [id])
 }
 
 model Visit {
@@ -102,15 +100,15 @@ model Visit {
 }
 
 model DropoffAttempt {
-  id       String              @id @default(cuid())
+  id       String        @id @default(cuid())
   quantity Int?
   status   DropoffStatus
   comment  String?
 
-  visitId     String
-  visit       Visit     @relation(fields: [visitId], references: [id])
-  placementId String
-  placement   Placement @relation(fields: [placementId], references: [id])
+  visitId String
+  visit   Visit  @relation(fields: [visitId], references: [id])
+  dropId  String
+  drop    Drop   @relation(fields: [dropId], references: [id])
 }
 
 enum DropoffStatus {

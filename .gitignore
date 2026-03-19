@@ -22,7 +22,27 @@
 
 # misc
 .DS_Store
+Thumbs.db
+
+# secrets & credentials
 *.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+*.der
+*_rsa
+*_dsa
+*_ecdsa
+*_ed25519
+*.pkcs12
+service-account*.json
+*-service-account.json
+credentials.json
+secrets.json
+secrets.yaml
+secrets.yml
 
 # debug
 npm-debug.log*
@@ -41,3 +61,6 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# claude code
+.claude/

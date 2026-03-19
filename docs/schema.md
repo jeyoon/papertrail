@@ -21,41 +21,41 @@ Design
 ├── name          (e.g. "Bold v1", "Minimal B")
 ├── description
 
-Promotion         (event × design — the abstract artifact)
+Flyer             (event × design — the abstract artifact)
 ├── id
 ├── event_id      → Event
 ├── design_id     → Design
 
-PrintOrder        (physical print run for a promotion)
+PrintOrder        (physical print run for a flyer)
 ├── id
-├── promotion_id  → Promotion
+├── flyer_id      → Flyer
 ├── quantity
 ├── ordered_at
 ├── notes
 
-Placement         (promotion deployed at a location — owns attribution)
+Drop              (flyer deployed at a location — owns QR attribution)
 ├── id
-├── promotion_id  → Promotion
+├── flyer_id      → Flyer
 ├── location_id   → Location
-├── qr_code       (encodes placement_id)
+├── qr_code       (encodes drop_id)
 ├── created_at
 
-Engagement        (someone engages via QR code)
+Engagement        (someone scans a QR code)
 ├── id
-├── placement_id  → Placement
+├── drop_id       → Drop
 ├── scanned_at
 
-Visit             (a trip to a store)
+Visit             (a trip to a location)
 ├── id
 ├── location_id   → Location
 ├── visited_by
 ├── visited_at
 ├── notes
 
-DropoffAttempt    (one per promotion attempted during a visit)
+DropoffAttempt    (one per flyer attempted during a visit)
 ├── id
 ├── visit_id      → Visit
-├── placement_id  → Placement
+├── drop_id       → Drop
 ├── quantity      (how many leaflets left)
 ├── status        (accepted | rejected | tentative)
 ├── comment
@@ -69,18 +69,18 @@ DropoffAttempt    (one per promotion attempted during a visit)
 1. Create **Locations** (stores)
 2. Create **Events**
 3. Create **Designs** (one per visual variant)
-4. Create **Promotions** by pairing an Event with a Design
-5. Generate **Placements** for each store you plan to hit → unique QR code per placement
-6. Log **PrintOrders** as you order physical batches of a promotion
+4. Create **Flyers** by pairing an Event with a Design
+5. Generate **Drops** for each store you plan to hit → unique QR code per drop
+6. Log **PrintOrders** as you order physical batches of a flyer
 
 **Field work**
 7. Team member creates a **Visit** (location + who + when)
-8. For each promotion they attempted to drop off, log a **DropoffAttempt** → quantity, status, comment
-   - UI presents this as one visit form; each promotion is a row within it
+8. For each flyer they attempted to drop off, log a **DropoffAttempt** → quantity, status, comment
+   - UI presents this as one visit form; each flyer is a row within it
 
 **Attribution**
-9. Someone scans a QR code → **Engagement** logged against the Placement
-10. Placement → Promotion → Event + Design + Location gives full attribution
+9. Someone scans a QR code → **Engagement** logged against the Drop
+10. Drop → Flyer → Event + Design + Location gives full attribution
 
 **Analytics**
 - Engagements by location → which stores drive the most interest
